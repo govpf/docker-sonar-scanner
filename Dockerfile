@@ -6,7 +6,7 @@ ENV PATH $PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
 ENV SONAR_SCANNER_OPTS "-Xmx512m -XX:MaxPermSize=128m"
 
 # Install sonar-scanner
-RUN wget -c https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
+RUN wget -c https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
     && unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
     && mv sonar-scanner-$SONAR_SCANNER_VERSION /opt/sonar-scanner \
     && rm -f sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip
