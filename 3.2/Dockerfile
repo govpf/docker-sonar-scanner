@@ -11,9 +11,9 @@ RUN wget -c https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sona
     && mv sonar-scanner-$SONAR_SCANNER_VERSION /opt/sonar-scanner \
     && rm -f sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip
 
-COPY sonar-scanner.properties ./sonar-scanner-${SONAR_SCANNER_VERSION}/conf/sonar-scanner.properties
+COPY 3.2/sonar-scanner.properties ./sonar-scanner-${SONAR_SCANNER_VERSION}/conf/sonar-scanner.properties
 
-ADD docker-entrypoint.sh /docker-entrypoint
+ADD 3.2/docker-entrypoint.sh /docker-entrypoint
 
 RUN groupadd -r sonar \
  && useradd -r -s /usr/sbin/nologin -d ${SONAR_RUNNER_HOME} -c "Sonar service user" -g sonar sonar \
