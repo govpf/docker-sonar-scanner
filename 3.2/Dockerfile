@@ -4,6 +4,7 @@ ENV SONAR_SCANNER_VERSION 3.2.0.1227
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
 ENV SONAR_SCANNER_OPTS "-Xmx512m -XX:MaxPermSize=128m"
+ENV _JAVA_OPTIONS '-Djdk.tls.maxCertificateChainLength=13'
 
 # Install sonar-scanner
 RUN wget -c https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
