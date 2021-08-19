@@ -6,6 +6,16 @@ ENV PATH $PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
 ENV SONAR_SCANNER_OPTS "-Xmx512m -XX:MaxPermSize=128m"
 ENV _JAVA_OPTIONS '-Djdk.tls.maxCertificateChainLength=13'
 
+# Install Node
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+    && apt-get update \
+    && apt-get install -y nodejs procps make g++ \
+    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+    && apt-get update && apt-get install -y --no-install-recommends yarn \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm i -g npm
+
 # Install sonar-scanner
 RUN wget -c https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
     && unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
