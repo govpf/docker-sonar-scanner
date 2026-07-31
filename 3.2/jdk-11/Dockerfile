@@ -9,6 +9,7 @@ ENV _JAVA_OPTIONS="-Djdk.tls.maxCertificateChainLength=13"
 ARG NODE_VERSION=14.21.3
 
 # Install Node.js 14 + Yarn
+# Install Node.js 14 + Yarn
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -20,7 +21,10 @@ RUN apt-get update \
         tini \
     && curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
         | tar -xJ --strip-components=1 -C /usr/local \
-    && npm install -g npm yarn \
+    && npm install -g npm@8.19.4 yarn@1.22.22 \
+    && node --version \
+    && npm --version \
+    && yarn --version \
     && rm -rf /var/lib/apt/lists/*
 
 # Install sonar-scanner
