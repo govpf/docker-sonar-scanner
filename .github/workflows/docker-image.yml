@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [5.1]
-        jdk: [17]
+        version: [3.2, 4.6]
+        jdk: [8, 11]
+        include:
+          - version: 5.1
+            jdk: 17
     env:
       repo: "govpf/sonar-scanner"
     steps:
