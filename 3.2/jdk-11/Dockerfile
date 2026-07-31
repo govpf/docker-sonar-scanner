@@ -1,30 +1,47 @@
 FROM govpf/maven:3-jdk-11
 
-ENV SONAR_SCANNER_VERSION 3.2.0.1227
+ENV SONAR_SCANNER_VERSION=3.2.0.1227
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
-ENV PATH $PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
-ENV SONAR_SCANNER_OPTS "-Xmx512m -XX:MaxPermSize=128m"
-ENV _JAVA_OPTIONS '-Djdk.tls.maxCertificateChainLength=13'
+ENV PATH=$PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
+ENV SONAR_SCANNER_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+ENV _JAVA_OPTIONS="-Djdk.tls.maxCertificateChainLength=13"
 
-# Install Node
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+# Install Node.js 14 + Yarn
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        gnupg \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+        | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_14.x jammy main" \
+        > /etc/apt/sources.list.d/nodesource.list \
+    && curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg \
+        | gpg --dearmor -o /etc/apt/keyrings/yarn.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" \
+        > /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
-    && apt-get install -y nodejs procps make g++ tini \
-    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-get update && apt-get install -y --no-install-recommends yarn \
-    && rm -rf /var/lib/apt/lists/* \
-    && npm i -g npm
-
-# Install sonar-scanner
-RUN apt update && apt install -y --no-install-recommends wget unzip \
-    && wget -c https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
-    && unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
-    && mv sonar-scanner-$SONAR_SCANNER_VERSION /opt/sonar-scanner \
-    && rm -f sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
+    && apt-get install -y --no-install-recommends \
+        nodejs \
+        yarn \
+        procps \
+        make \
+        g++ \
+        tini \
+    && npm install -g npm \
     && rm -rf /var/lib/apt/lists/*
 
-COPY 3.2/sonar-scanner.properties ./sonar-scanner-${SONAR_SCANNER_VERSION}/conf/sonar-scanner.properties
+# Install sonar-scanner
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends wget unzip \
+    && wget -c https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip \
+    && unzip sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip \
+    && mv sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner \
+    && rm -f sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY 3.2/sonar-scanner.properties /opt/sonar-scanner/conf/sonar-scanner.properties
 
 ADD 3.2/docker-entrypoint.sh /docker-entrypoint
 
