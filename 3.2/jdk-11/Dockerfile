@@ -6,30 +6,21 @@ ENV PATH=$PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
 ENV SONAR_SCANNER_OPTS="-Xmx512m -XX:MaxPermSize=128m"
 ENV _JAVA_OPTIONS="-Djdk.tls.maxCertificateChainLength=13"
 
+ARG NODE_VERSION=14.21.3
+
 # Install Node.js 14 + Yarn
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
-        gnupg \
-    && mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
-        | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_14.x jammy main" \
-        > /etc/apt/sources.list.d/nodesource.list \
-    && curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg \
-        | gpg --dearmor -o /etc/apt/keyrings/yarn.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" \
-        > /etc/apt/sources.list.d/yarn.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        nodejs \
-        yarn \
+        xz-utils \
         procps \
         make \
         g++ \
         tini \
-    && npm install -g npm \
+    && curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
+        | tar -xJ --strip-components=1 -C /usr/local \
+    && npm install -g npm yarn \
     && rm -rf /var/lib/apt/lists/*
 
 # Install sonar-scanner
