@@ -9,7 +9,9 @@ ENV _JAVA_OPTIONS="-Djdk.tls.maxCertificateChainLength=13"
 ARG NODE_VERSION=14.21.3
 
 # Install Node.js 14 + Yarn
-# Install Node.js 14 + Yarn
+ARG NODE_VERSION=14.21.3
+ARG YARN_VERSION=1.22.22
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -21,7 +23,10 @@ RUN apt-get update \
         tini \
     && curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
         | tar -xJ --strip-components=1 -C /usr/local \
-    && npm install -g npm@8.19.4 yarn@1.22.22 \
+    && curl -fsSL https://yarnpkg.com/downloads/${YARN_VERSION}/yarn-v${YARN_VERSION}.tar.gz \
+        | tar -xz -C /opt \
+    && ln -sf /opt/yarn-v${YARN_VERSION}/bin/yarn /usr/local/bin/yarn \
+    && ln -sf /opt/yarn-v${YARN_VERSION}/bin/yarnpkg /usr/local/bin/yarnpkg \
     && node --version \
     && npm --version \
     && yarn --version \
