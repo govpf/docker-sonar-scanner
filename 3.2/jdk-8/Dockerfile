@@ -1,20 +1,35 @@
 FROM govpf/maven:3-jdk-8
 
-ENV SONAR_SCANNER_VERSION 3.2.0.1227
+ENV SONAR_SCANNER_VERSION=3.2.0.1227
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
-ENV PATH $PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
-ENV SONAR_SCANNER_OPTS "-Xmx512m -XX:MaxPermSize=128m"
-ENV _JAVA_OPTIONS '-Djdk.tls.maxCertificateChainLength=13'
+ENV PATH=$PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
+ENV SONAR_SCANNER_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+ENV _JAVA_OPTIONS='-Djdk.tls.maxCertificateChainLength=13'
 
 # Install Node
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
-    && apt-get update \
-    && apt-get install -y nodejs procps make g++ \
-    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-get update && apt-get install -y --no-install-recommends yarn \
-    && rm -rf /var/lib/apt/lists/* \
-    && npm i -g npm
+# Install Node.js 14 + Yarn
+ARG NODE_VERSION=14.21.3
+ARG YARN_VERSION=1.22.22
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        xz-utils \
+        procps \
+        make \
+        g++ \
+        tini \
+    && curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
+        | tar -xJ --strip-components=1 -C /usr/local \
+    && curl -fsSL https://yarnpkg.com/downloads/${YARN_VERSION}/yarn-v${YARN_VERSION}.tar.gz \
+        | tar -xz -C /opt \
+    && ln -s /opt/yarn-v${YARN_VERSION}/bin/yarn /usr/local/bin/yarn \
+    && ln -s /opt/yarn-v${YARN_VERSION}/bin/yarnpkg /usr/local/bin/yarnpkg \
+    && node --version \
+    && npm --version \
+    && yarn --version \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install sonar-scanner
 RUN wget -c https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
