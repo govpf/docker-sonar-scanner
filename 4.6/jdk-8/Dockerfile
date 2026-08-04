@@ -1,5 +1,8 @@
 FROM govpf/maven:3-jdk-8
 
+LABEL govpf.fromimage="govpf/maven:3-jdk-8"
+LABEL govpf.category="ci-cd"
+
 ENV SONAR_SCANNER_VERSION 4.6.2.2472
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
 ENV PATH $PATH:/root/sonar-scanner-$SONAR_SCANNER_VERSION/bin
